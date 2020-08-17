@@ -1,4 +1,4 @@
-# valia_app
+# test_app_imdb
 
 A new Flutter application.
 

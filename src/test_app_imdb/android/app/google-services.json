@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "60486568986",
+    "firebase_url": "https://testimdbapp.firebaseio.com",
+    "project_id": "testimdbapp",
+    "storage_bucket": "testimdbapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:60486568986:android:9a1ca4da75631520b2d5a3",
+        "android_client_info": {
+          "package_name": "com.example.test_app_imdb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "60486568986-n9t3qg4a120ptvm62jncv9uhign2nmf5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDzKhHGq-GZPu6SSA4upjMs2iznnuWa1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "60486568986-n9t3qg4a120ptvm62jncv9uhign2nmf5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
