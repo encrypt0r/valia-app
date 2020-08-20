@@ -1,10 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app_imdb/homepage.dart';
-
-import 'jsonFiles/popularMovies.dart';
 
 void main() => runApp(myApp());
 

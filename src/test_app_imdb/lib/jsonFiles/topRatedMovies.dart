@@ -1,17 +1,15 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-//popular movies
-
-class PopularMovie {
-  var page;
-  var totalResults;
-  var totalPages;
+class TopRatedMovies {
+  int page;
+  int totalResults;
+  int totalPages;
   List<Results> results;
 
-  PopularMovie({this.page, this.totalResults, this.totalPages, this.results});
+  TopRatedMovies({this.page, this.totalResults, this.totalPages, this.results});
 
-  PopularMovie.fromJson(Map<String, dynamic> json) {
+  TopRatedMovies.fromJson(Map<String, dynamic> json) {
     page = json['page'];
     totalResults = json['total_results'];
     totalPages = json['total_pages'];
@@ -34,16 +32,17 @@ class PopularMovie {
     return data;
   }
 
-  Future<PopularMovie> fetchPopularMovie() async
+  Future<TopRatedMovies> fetchTopRatedMovie() async
   {
-    final response = await http.get('https://api.themoviedb.org/3/movie/popular?api_key=01efbb9660306fe12a2e52a6218aca4f&language=en-US&page=1');
+    final response = await http
+        .get('https://api.themoviedb.org/3/movie/top_rated?api_key=01efbb9660306fe12a2e52a6218aca4f&language=en-US&page=1');
 
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,
       // then parse the JSON.
 
-      return PopularMovie.fromJson(json.decode(response.body));
+      return TopRatedMovies.fromJson(json.decode(response.body));
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
@@ -53,11 +52,11 @@ class PopularMovie {
 }
 
 class Results {
-  var popularity;
-  var voteCount;
+  double popularity;
+  int voteCount;
   bool video;
   String posterPath;
-  var id;
+  int id;
   bool adult;
   String backdropPath;
   String originalLanguage;
@@ -69,8 +68,7 @@ class Results {
   String releaseDate;
 
   Results(
-      {
-        this.popularity,
+      {this.popularity,
         this.voteCount,
         this.video,
         this.posterPath,
@@ -121,9 +119,3 @@ class Results {
     return data;
   }
 }
-
-
-
-
-
-
