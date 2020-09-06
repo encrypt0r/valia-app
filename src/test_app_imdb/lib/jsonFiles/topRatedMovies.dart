@@ -32,13 +32,14 @@ class TopRatedMovies {
     return data;
   }
 
-  Future<TopRatedMovies> fetchTopRatedMovie() async
+  Future<TopRatedMovies> fetchTopRatedMovie(int page) async
   {
     final response = await http
-        .get('https://api.themoviedb.org/3/movie/top_rated?api_key=01efbb9660306fe12a2e52a6218aca4f&language=en-US&page=1');
+        .get('https://api.themoviedb.org/3/movie/top_rated?api_key=01efbb9660306fe12a2e52a6218aca4f&language=en-US&page=$page');
 
 
     if (response.statusCode == 200) {
+      print("Get Data Top Rated");
       // If the server did return a 200 OK response,
       // then parse the JSON.
 

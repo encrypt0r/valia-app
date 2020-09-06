@@ -34,12 +34,13 @@ class PopularMovie {
     return data;
   }
 
-  Future<PopularMovie> fetchPopularMovie() async
+  Future<PopularMovie> fetchPopularMovie(int page) async
   {
-    final response = await http.get('https://api.themoviedb.org/3/movie/popular?api_key=01efbb9660306fe12a2e52a6218aca4f&language=en-US&page=1');
+    final response = await http.get('https://api.themoviedb.org/3/movie/popular?api_key=01efbb9660306fe12a2e52a6218aca4f&language=en-US&page=$page');
 
 
     if (response.statusCode == 200) {
+      print("Get Data Most Popular");
       // If the server did return a 200 OK response,
       // then parse the JSON.
 

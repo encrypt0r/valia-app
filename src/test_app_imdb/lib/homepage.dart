@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:test_app_imdb/allMostPopularMovies.dart';
+import 'package:test_app_imdb/allTopRatedMovies.dart';
 import 'package:test_app_imdb/jsonFiles/popularMovies.dart';
-import 'package:test_app_imdb/SelectedMovieBasedOnIDPage.dart';
 import 'package:test_app_imdb/jsonFiles/topRatedMovies.dart';
-import 'package:test_app_imdb/testSelectedMovieBasedOnIDPage.dart';
+import 'package:test_app_imdb/selectedMovieBasedOnIDPage.dart';
 
 
 class HomePage extends StatefulWidget
@@ -24,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   Future<TopRatedMovies> futureTopRatedMovie;
 
 
+
   @override
   void initState() {
     // TODO: implement initState
@@ -33,7 +35,7 @@ class _HomePageState extends State<HomePage> {
     {
       setState(()
       {
-        futurePopularMovie = PopularMovie().fetchPopularMovie();
+        futurePopularMovie = PopularMovie().fetchPopularMovie(1);
       });
     });
 
@@ -41,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     {
       setState(()
       {
-        futureTopRatedMovie = TopRatedMovies().fetchTopRatedMovie();
+        futureTopRatedMovie = TopRatedMovies().fetchTopRatedMovie(1);
       });
     });
   }
@@ -55,7 +57,6 @@ class _HomePageState extends State<HomePage> {
   bool clickToExpandPopularMovieBool = false;
   int selectedIndexPopular;
   int popularItemCount;
-
   int favoriteIndexPopular;
   bool favoriteBoolIconPopular = false;
 
@@ -106,6 +107,7 @@ class _HomePageState extends State<HomePage> {
                     style: GoogleFonts.doHyeon(
                       fontSize: 50,),
                     ),
+
                     FutureBuilder<TopRatedMovies>(
                       future: futureTopRatedMovie,
                       builder: (context,snapshot)
@@ -119,67 +121,85 @@ class _HomePageState extends State<HomePage> {
 
 
                           return SizedBox(
-                            height: 398,
-                            width: 295,
-                              child: PageView.builder(
-                                controller: PageController(initialPage: 0,),
+                            height: 408,
+                            width: MediaQuery.of(context).size.width,
+                            child: PageView.builder(
+                              controller: PageController(initialPage: 0, viewportFraction: 0.7),
+                              itemBuilder: (BuildContext context, int index)
+                              {
 
-                                itemBuilder: (BuildContext context, int index)
-                                {
+                                topRatedMoviesTitles.add(movieData.results[index].title);
+                                topRatedMoviesID.add(movieData.results[index].id);
+                                topRatedPosterPath.add("${imageLink.toString()}${movieData.results[index].posterPath}");
 
-                                  topRatedMoviesTitles.add(movieData.results[index].title);
-                                  topRatedMoviesID.add(movieData.results[index].id);
-                                  topRatedPosterPath.add("${imageLink.toString()}${movieData.results[index].posterPath}");
 
-                                  //var bannerMovie = listBanner[index % 7];
 
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        selectedIndexTopRated = index;
-                                        print("index: $selectedIndexTopRated");
+                                //var bannerMovie = listBanner[index % 7];
 
-                                        if(selectedIndexTopRated == index)
-                                        {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (context)
-                                                  {
-                                                    return SelectedMovieBasedOnID(
-                                                      selectedMoviesID: topRatedMoviesID[selectedIndexTopRated],
-                                                      selectedMovieTitle: topRatedMoviesTitles[selectedIndexTopRated],
-                                                    );
-                                                  }
-                                              )
-                                          );
-                                        }
-                                      },
-                                      child: Container(
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      selectedIndexTopRated = index;
+                                      print("index: $selectedIndexTopRated");
 
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: <Widget>[
-                                            Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                    color: Colors.black54,
-                                                    width: 20,
-                                                    style: BorderStyle.solid,
-                                                  ),
-                                                ),
-                                                child: Center(
-                                                    child: Image.network(topRatedPosterPath[index],)
-                                                ),
-                                            ),
-                                          ],
+                                      if(selectedIndexTopRated == index)
+                                      {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context)
+                                                {
+                                                  return SelectedMovieBasedOnID(
+                                                    selectedMoviesID: topRatedMoviesID[selectedIndexTopRated],
+                                                    selectedMovieTitle: topRatedMoviesTitles[selectedIndexTopRated],
+                                                  );
+                                                }
+                                            )
+                                        );
+                                      }
+                                    },
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: <Widget>[
+                                        Container(
+                                          color:Colors.blueGrey,
+                                          child: Center(
+                                              child: Image.network(topRatedPosterPath[index],)
+                                          ),
                                         ),
-                                      ),
+                                        GestureDetector(
+                                          onTap: () {print("IndexFavTop: $index");} ,
+                                          child: Align(
+                                            alignment: Alignment.topRight,
+                                              child: Icon(Icons.favorite_border,color: Colors.red,size: 50,)
+                                          ),
+                                        ),
+                                        Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 65),
+                                              child: RaisedButton(
+                                                disabledColor: Colors.red,
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.star_border,size: 40,color: Colors.white,),
+                                                    SizedBox(width: 20,),
+                                                    Text(movieData.results[index].voteAverage.toString(),
+                                                      style: GoogleFonts.doHyeon(color: Colors.white,fontSize: 25),),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                        ),
+                                      ],
                                     ),
-                                  );
-                                },
-                                itemCount: topRatedItemCount,
-                              ),
+                                  ),
+                                );
+                              },
+                              itemCount: 5,
+
+                            ),
                             );
 
                         }
@@ -201,8 +221,33 @@ class _HomePageState extends State<HomePage> {
                         }
                       },
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0,top: 15.0,),
+                      child: GestureDetector(
+                        onTap: ()
+                        {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context)
+                              {
+                                return AllTopRatedMovies();
+                              }),
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text("View All",
+                              style: GoogleFonts.doHyeon(
+                                fontSize: 25,),
+                            ),
+                            Icon(Icons.keyboard_arrow_right,size: 40,),
+                          ],
+                        ),
+                      ),
+                    ),
                     SizedBox(height: 50,),
-                    Text("Popular",
+                    Text("Most Popular",
                       style: GoogleFonts.doHyeon(
                         fontSize: 50,),
                     ),
@@ -218,10 +263,9 @@ class _HomePageState extends State<HomePage> {
                           popularItemCount = movieData.results.length;
 
                           return SizedBox(
-                            height: 398,
-                            width: 295,
+                            height: 408,
                             child: PageView.builder(
-                              controller: PageController(initialPage: 0,),
+                              controller: PageController(initialPage: 0,viewportFraction: 0.7),
                               itemBuilder: (BuildContext context, int index)
                               {
 
@@ -253,30 +297,47 @@ class _HomePageState extends State<HomePage> {
                                         );
                                       }
                                     },
-                                    child: Container(
-
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: <Widget>[
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: Colors.black54,
-                                                width: 20,
-                                                style: BorderStyle.solid,
-                                              ),
-                                            ),
-                                            child: Center(
-                                                child: Image.network(popularPosterPath[index],)
-                                            ),
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: <Widget>[
+                                        Container(
+                                          color:Colors.blueGrey,
+                                          child: Center(
+                                              child: Image.network(popularPosterPath[index],)
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {print("IndexFavPop: $index");} ,
+                                          child: Align(
+                                              alignment: Alignment.topRight,
+                                              child: Icon(Icons.favorite_border,color: Colors.red,size: 50,)
+                                          ),
+                                        ),
+                                        Align(
+                                            alignment: Alignment.bottomCenter,
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 65),
+                                              child: RaisedButton(
+                                                disabledColor: Colors.red,
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(Icons.star_border,size: 40,color: Colors.white,),
+                                                    SizedBox(width: 20,),
+                                                    Text(movieData.results[index].voteAverage.toString(),
+                                                      style: GoogleFonts.doHyeon(color: Colors.white,fontSize: 25),),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 );
                               },
-                              itemCount: popularItemCount,
+                              itemCount: 5,
+
                             ),
                           );
 
@@ -298,6 +359,31 @@ class _HomePageState extends State<HomePage> {
                           );
                         }
                       },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0,top: 15.0,),
+                      child: GestureDetector(
+                        onTap: ()
+                        {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context)
+                                {
+                                  return AllMostPopularMovies();
+                                }),
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text("View All",
+                              style: GoogleFonts.doHyeon(
+                                fontSize: 25,),
+                            ),
+                            Icon(Icons.keyboard_arrow_right,size: 40,),
+                          ],
+                        ),
+                      ),
                     ),
                     SizedBox(height: 25,),
 
