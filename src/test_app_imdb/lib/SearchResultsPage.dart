@@ -1,29 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:test_app_imdb/jsonFiles/popularMovies.dart';
+import 'package:test_app_imdb/jsonFiles/searchMovies.dart';
 import 'package:test_app_imdb/selectedMovieBasedOnIDPage.dart';
 
-class AllMostPopularMovies extends StatefulWidget {
+class SearchResultsPage extends StatefulWidget {
+
+
+  final String searchedMovieTitle;
+
+  const SearchResultsPage({Key key,this.searchedMovieTitle}) : super(key: key);
+
   @override
-  _AllMostPopularMoviesState createState() => _AllMostPopularMoviesState();
+  _SearchResultsPageState createState() => _SearchResultsPageState();
 }
 
-class _AllMostPopularMoviesState extends State<AllMostPopularMovies>
+class _SearchResultsPageState extends State<SearchResultsPage>
 {
 
   final ScrollController scrollController = ScrollController();
+  TextEditingController _textEditingController = TextEditingController();
 
-
+  String searchString;
 
   @override
   void initState() {
     // TODO: implement initState
+
+    setState(()
+    {
+      _textEditingController.text = Uri.decodeComponent(widget.searchedMovieTitle);
+      searchString = Uri.decodeComponent(widget.searchedMovieTitle);
+    });
     super.initState();
 
   }
 
 
-  String title = null ?? "Most Popular Movies";
+  String title = null ?? "Search Results";
+
+
 
 
   @override
@@ -49,8 +64,94 @@ class _AllMostPopularMoviesState extends State<AllMostPopularMovies>
         child: Center(
           child: Column(
             children: [
-              FutureBuilder<PopularMovie>(
-                future: PopularMovie().fetchPopularMovie(1),
+              SizedBox(height: 25,),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blueGrey,)
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.red)
+                    ),
+                    labelStyle: GoogleFonts.doHyeon(
+                      color: Colors.white,
+                      fontSize: 20,
+                      decorationColor: Colors.white,
+                    ),
+                    hintStyle: GoogleFonts.tajawal(
+                      color: Colors.white,
+                      fontSize: 20,
+                      decorationColor: Colors.white,
+                    ),
+                    labelText: "Search Movie",
+                    hintText: "Enter A Movie Name",
+                    prefix: Visibility(
+                      visible: !(searchString == null || searchString == ""),
+                      child: FloatingActionButton(
+                        heroTag: "Button1",
+                        child: Icon(Icons.cancel),
+                        backgroundColor: Colors.transparent,
+                        mini: true,
+                        elevation: 0,
+                        tooltip: "Erase Text",
+                        onPressed: (){
+                          setState(()
+                          {
+                            _textEditingController.clear();
+                            searchString = null;
+                          });
+                        },
+                      ),
+                    ),
+                    suffix: FloatingActionButton(
+                      child: Icon(Icons.search,color: Colors.white,size: 25,),
+                      backgroundColor: searchString == null || searchString == "" ? Colors.transparent:Colors.blueGrey,
+                      mini: true,
+                      tooltip: "Search",
+                      disabledElevation: 0,
+                      onPressed: searchString == null || searchString == "" ?
+                      null
+                          :
+                          ()
+                      {
+                        print(searchString.toLowerCase());
+                        String movieNameEncoded = Uri.encodeComponent(searchString);
+                        print("movieNameEncoded: $movieNameEncoded");
+
+                        Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context)
+                                {
+                                  return SearchResultsPage(
+                                    searchedMovieTitle: movieNameEncoded ,
+                                  );
+                                }
+                            )
+                        );
+                      },
+                    ),
+                  ),
+                  style: GoogleFonts.tajawal(
+                    color: Colors.white,
+                    fontSize: 24,
+                    decorationColor: Colors.white,
+                  ),
+                  onChanged: (val)
+                  {
+                    setState(()
+                    {
+                      searchString = val;
+                    });
+                  },
+                  controller: _textEditingController,
+                ),
+              ),
+              SizedBox(height: 25,),
+              FutureBuilder<SearchMovies>(
+                future: SearchMovies().fetchSearchMovie(widget.searchedMovieTitle,1),
                 builder: (context,snapshot)
                 {
 
@@ -59,7 +160,7 @@ class _AllMostPopularMoviesState extends State<AllMostPopularMovies>
                     return SizedBox(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      child: MovieList(MostPopularMovies1: snapshot.data,),
+                      child: MovieList(SearchMovies1: snapshot.data,),
                     );
 
                   }
@@ -90,9 +191,8 @@ class _AllMostPopularMoviesState extends State<AllMostPopularMovies>
 }
 
 class MovieList extends StatefulWidget {
-  final PopularMovie MostPopularMovies1;
-
-  const MovieList ({this.MostPopularMovies1, Key key}) : super (key:key);
+  final SearchMovies SearchMovies1;
+  const MovieList ({this.SearchMovies1, Key key}) : super (key:key);
 
   @override
   _MovieListState createState() => _MovieListState();
@@ -106,6 +206,7 @@ class _MovieListState extends State<MovieList> {
 
   int selectedIndexMostPopular;
 
+
   bool onNotification(ScrollNotification notification)
   {
     if(notification is ScrollUpdateNotification)
@@ -113,7 +214,7 @@ class _MovieListState extends State<MovieList> {
       if(scrollController.position.pixels == scrollController.position.maxScrollExtent)
       {
         print("End Scroll Most Popular");
-        PopularMovie().fetchPopularMovie(currentPage + 1).then((val)
+        SearchMovies().fetchSearchMovie(SearchResultsPage().searchedMovieTitle,currentPage + 1).then((val)
         {
           currentPage = val.page;
           setState(()
@@ -129,7 +230,7 @@ class _MovieListState extends State<MovieList> {
   @override
   void initState()
   {
-    movie = widget.MostPopularMovies1.results;
+    movie = widget.SearchMovies1.results;
     super.initState();
   }
   @override
@@ -158,6 +259,7 @@ class _MovieListState extends State<MovieList> {
 
           return Column(
             children: [
+
               SizedBox(height: 20,),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 60.0),
@@ -187,10 +289,10 @@ class _MovieListState extends State<MovieList> {
                       Container(
                         color:Colors.blueGrey,
                         child: Center(
-                            child: Image.network( movie[index].posterPath == null?
-                            "https://www.fcmlindia.com/images/fifty-days-campaign/no-image.jpg"
+                            child: Image.network(movie[index].posterPath == null ?
+                            ("https://www.fcmlindia.com/images/fifty-days-campaign/no-image.jpg")
                                 :
-                            "https://image.tmdb.org/t/p/w600_and_h900_bestv2" + movie[index].posterPath)
+                            "https://image.tmdb.org/t/p/w600_and_h900_bestv2${movie[index].posterPath.toString()}",)
                         ),
                       ),
                       GestureDetector(

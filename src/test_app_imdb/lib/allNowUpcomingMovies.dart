@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:test_app_imdb/jsonFiles/topRatedMovies.dart';
+import 'package:test_app_imdb/jsonFiles/upcomingMovies.dart';
 import 'package:test_app_imdb/selectedMovieBasedOnIDPage.dart';
 
-class AllTopRatedMovies extends StatefulWidget {
+class AllNowUpcomingMovies extends StatefulWidget {
   @override
-  _AllTopRatedMoviesState createState() => _AllTopRatedMoviesState();
+  _AllNowUpcomingMoviesState createState() => _AllNowUpcomingMoviesState();
 }
 
-class _AllTopRatedMoviesState extends State<AllTopRatedMovies>
+class _AllNowUpcomingMoviesState extends State<AllNowUpcomingMovies>
 {
   //Future<TopRatedMovies> futureTopRatedMovie;
 
@@ -31,7 +31,7 @@ class _AllTopRatedMoviesState extends State<AllTopRatedMovies>
   }
 
 
-  String title = null ?? "Top Rated Movies";
+  String title = null ?? "Upcoming Movies";
 
 
   @override
@@ -57,8 +57,8 @@ class _AllTopRatedMoviesState extends State<AllTopRatedMovies>
         child: Center(
           child: Column(
             children: [
-              FutureBuilder<TopRatedMovies>(
-                future: TopRatedMovies().fetchTopRatedMovie(1),
+              FutureBuilder<UpcomingMovies>(
+                future: UpcomingMovies().fetchNowPlayingMovies(1),
                 builder: (context,snapshot)
                 {
 
@@ -72,7 +72,7 @@ class _AllTopRatedMoviesState extends State<AllTopRatedMovies>
                     return SizedBox(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      child: MovieList(TopRatedMovies1: snapshot.data,),
+                      child: MovieList(UpcomingMovies1: snapshot.data,),
                     );
 
                   }
@@ -103,9 +103,9 @@ class _AllTopRatedMoviesState extends State<AllTopRatedMovies>
 }
 
 class MovieList extends StatefulWidget {
-  final TopRatedMovies TopRatedMovies1;
+  final UpcomingMovies UpcomingMovies1;
 
-  const MovieList ({this.TopRatedMovies1, Key key}) : super (key:key);
+  const MovieList ({this.UpcomingMovies1, Key key}) : super (key:key);
 
   @override
   _MovieListState createState() => _MovieListState();
@@ -117,7 +117,7 @@ class _MovieListState extends State<MovieList> {
   List<Results> movie;
   int currentPage = 1;
 
-  int selectedIndexTopRated;
+  int selectedIndexUpcoming;
 
   bool onNotification(ScrollNotification notification)
   {
@@ -126,7 +126,7 @@ class _MovieListState extends State<MovieList> {
       if(scrollController.position.pixels == scrollController.position.maxScrollExtent)
       {
         print("End Scroll Top Rated");
-        TopRatedMovies().fetchTopRatedMovie(currentPage + 1).then((val)
+        UpcomingMovies().fetchNowPlayingMovies(currentPage + 1).then((val)
         {
           currentPage = val.page;
           setState(()
@@ -142,7 +142,7 @@ class _MovieListState extends State<MovieList> {
   @override
   void initState()
   {
-    movie = widget.TopRatedMovies1.results;
+    movie = widget.UpcomingMovies1.results;
     super.initState();
   }
   @override
@@ -175,25 +175,25 @@ class _MovieListState extends State<MovieList> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 60.0),
                 child: GestureDetector(
-                onTap: () {
-                  selectedIndexTopRated = index;
-                  print("index: $selectedIndexTopRated");
+                  onTap: () {
+                    selectedIndexUpcoming = index;
+                    print("index: $selectedIndexUpcoming");
 
-                  if(selectedIndexTopRated == index)
-                  {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context)
-                            {
-                              return SelectedMovieBasedOnID(
-                                selectedMoviesID: movie[selectedIndexTopRated].id,
-                                selectedMovieTitle: movie[selectedIndexTopRated].title,
-                              );
-                            }
-                        )
-                    );
-                  }
-                },
+                    if(selectedIndexUpcoming == index)
+                    {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context)
+                              {
+                                return SelectedMovieBasedOnID(
+                                  selectedMoviesID: movie[selectedIndexUpcoming].id,
+                                  selectedMovieTitle: movie[selectedIndexUpcoming].title,
+                                );
+                              }
+                          )
+                      );
+                    }
+                  },
                   child: Stack(
                     alignment: Alignment.topRight,
                     children: <Widget>[

@@ -56,6 +56,12 @@ class _SelectedMovieBasedOnIDState extends State<SelectedMovieBasedOnID> {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context);
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.selectedMovieTitle),
+        centerTitle: true,
+        backgroundColor: Colors.blueGrey,
+        elevation: 10.0,
+      ),
       backgroundColor: Colors.grey,
       body: Padding(
         padding: EdgeInsets.only(
@@ -91,17 +97,20 @@ class _SelectedMovieBasedOnIDState extends State<SelectedMovieBasedOnID> {
 
                   return Column(
                     children: <Widget>[
-                      Stack(
-                        children: <Widget>[
-                          BackdropImage(imageLink + selectedPosterPath),
-//                          _buildWidgetAppBar(mediaQuery, context),
-                          _buildWidgetFloatingActionButton(mediaQuery),
-                          _buildWidgetIconBuyAndShare(mediaQuery),
-                        ],
-                      ),
                       Expanded(
                         child: ListView(
                           children: <Widget>[
+                            Stack(
+                              children: <Widget>[
+                                BackdropImage(selectedPosterPath == null ?
+                                "https://www.fcmlindia.com/images/fifty-days-campaign/no-image.jpg"
+                                    :
+                                "$imageLink$selectedPosterPath"),
+//                          _buildWidgetAppBar(mediaQuery, context),
+                                _buildWidgetFloatingActionButton(mediaQuery),
+                                _buildWidgetIconBuyAndShare(mediaQuery),
+                              ],
+                            ),
                             _buildWidgetTitleMovie(context,selectedMovieTitle),
                             SizedBox(height: 4.0),
                             _buildWidgetGenreMovie(context,selectedMovieGenres,lengthOfGenres),
@@ -178,7 +187,7 @@ class _SelectedMovieBasedOnIDState extends State<SelectedMovieBasedOnID> {
   Widget _buildWidgetFloatingActionButton(MediaQueryData mediaQuery) {
     return Column(
       children: <Widget>[
-        SizedBox(height: mediaQuery.size.height / 1.75),
+        SizedBox(height: mediaQuery.size.height / 1.35),
         Center(
           child: FloatingActionButton(
             onPressed: () {
@@ -202,7 +211,7 @@ class _SelectedMovieBasedOnIDState extends State<SelectedMovieBasedOnID> {
       child: Column(
         children: <Widget>[
           SizedBox(
-            height: mediaQuery.size.height / 1.7,
+            height: mediaQuery.size.height / 1.25,
           ),
           Stack(
             children: <Widget>[
@@ -222,10 +231,12 @@ class _SelectedMovieBasedOnIDState extends State<SelectedMovieBasedOnID> {
   }
 
   Widget _buildWidgetTitleMovie(BuildContext context,String selectedMovieTitle) {
-    return Center(
-      child: Text(
-        selectedMovieTitle,
-        style: Theme.of(context).textTheme.title,
+    return Container(
+      child: Center(
+        child: Text(
+          selectedMovieTitle,
+          style: Theme.of(context).textTheme.title,
+        ),
       ),
     );
   }
@@ -468,7 +479,7 @@ class BackdropImage extends StatelessWidget {
     return ClipPath(
       child: Image.network(
         backdropPath,
-        height: mediaQuery.size.height / 1.5,
+        height: mediaQuery.size.height / 1.0,
         width: mediaQuery.size.width,
         fit: BoxFit.cover,
       ),
@@ -481,10 +492,10 @@ class BottomWaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     var path = Path();
-    path.lineTo(0.0, size.height - 80.0);
+    path.lineTo(0.0, size.height - 200.0);
 
     var firstControlPoint = Offset(size.width / 2, size.height);
-    var firstEndPoint = Offset(size.width, size.height - 80.0);
+    var firstEndPoint = Offset(size.width, size.height - 200.0);
     path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
         firstEndPoint.dx, firstEndPoint.dy);
 
